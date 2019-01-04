@@ -16,7 +16,3 @@ data <- example$data
 tf <- example$tf
 questionnaire <- example$questionnaire
 design <- svydesign(~0, data = data)
-
-test_file(path = "./internal/R/unit_tests/test_questionnaire_skiplogic2.R")
-test_file(path = "./test_summary_statistics_categorical.R")
-test_file(path = "./internal/R/unit_tests/test_summary_statistics_numerical.R")

@@ -1,14 +1,15 @@
 Package: Setviz
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Visualise intersecting sets with weights
 Version: 0.1.0
 Authors@R: c(
     person("Eliora", "Henzler", role = "cre", "mai", email = "eliora.henzler@impact.initiatives.org"),
     person("Martin", "Barner", role = "aut"))
 Description: This package lets you visualise intersecting sets. 
-			It is a wrapper for the upsetR package, and can be used in combination with weighted percentages. Its functions take a list of binary variables in a dataframe, and show you what combinations of variables occur in what percentages
+			It is a wrapper for the upsetR package, and can be used in combination with weighted percentages from teh svydesign package. Its functions take a list of binary variables in a dataframe, and show you what combinations of variables occur in what percentages.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Imports: dplyr, roxygen2, reachR, upsetR, magrittr
+Imports: dplyr, roxygen2, reachR, UpSetR, magrittr
 Suggests: hypegrammaR
+RoxygenNote: 6.1.1

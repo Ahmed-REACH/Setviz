@@ -2,10 +2,9 @@
 rm(list=ls());if(!("rstudioapi" %in% installed.packages()[,"Package"])){install.packages("rstudioapi")};require("rstudioapi");
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path));setwd("./../..")
 
-install.packages(c("devtools", "roxygen2", "testthat", "knitr","UpSetR"))
-
-install.packages("rstudioapi")
 rstudioapi::isAvailable("0.99.149")
+
+install.packages(c("devtools", "roxygen2", "testthat", "knitr","UpSetR", "survey"))
 devtools::install_github("r-lib/devtools")
 
 library(roxygen2)

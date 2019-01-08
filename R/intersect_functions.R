@@ -4,9 +4,16 @@
 #'@param varnames a vector containing the names of variables to be used in the intersection
 #'@return The dataframe containing the intersections of all variables and the names of those combinations of varnames with '&'
 #'@examples
-#'
-expand_composite_indicators_to_set_intersections<-function(data,varnames){
-  # creates newvarnames, a vector for the new combinations of variables using all combinations of varnames with '&'
+#'@export
+expand_to_set_intersections<-function(data,varnames){
+  ### sanitise inputs
+  if(!is.data.frame(data))stop("input must be a data frame") #ensure first input is a dataframe
+  if(sum(varnames %in% names(data) < length(varnames))) #ensure all the variable names are in the dataframe
+    {culprits <- varnames[!(varnames %in% names(data))]
+    stop(paste0("all the variable names must be found in the data: ", culprits, " is/are not"))}
+  if(sum(sapply(data[varnames], is.numeric)) < length(varnames))stop("all the variables must be numeric or logical") #ensure all columns are coercible to numbers
+
+  ### creates a vector for the names of new variables using all combinations of varnames linked with '&'
   newvarnames<-lapply(1:length(varnames),function(x){
     combn(varnames,x) %>% apply(2,paste,collapse="&")
   }) %>% unlist
@@ -33,7 +40,7 @@ expand_composite_indicators_to_set_intersections<-function(data,varnames){
 #'@param label the label to be added to the plot
 #'@return A plot object
 #'@examples
-#'
+#'@export
 set_intersection_plot<-function(set_percentages, nsets, nintersects = 12, label = NULL){
   set_percentages <- set_percentages*100 %>% round
   label <- as.character(label)
@@ -52,7 +59,7 @@ set_intersection_plot<-function(set_percentages, nsets, nintersects = 12, label 
 #'@param label the label to be added to the plot
 #'@return A vector of the aggregated percent for each intersection
 #'@examples
-#'
+#'@export
 make_set_percentages <- function(data, varnames, exclude_unique = T){
 
   # create the design object with the weights if applicable

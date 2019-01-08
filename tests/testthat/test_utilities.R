@@ -1,7 +1,9 @@
 # where are the examples stored?
 
+getwd()
+
 example.data.path<-function(examplename){
-  return(paste0("./test_data/",examplename,"/"))
+  return(paste0("./tests/test_data/",examplename,"/"))
 }
 
 
@@ -30,7 +32,7 @@ example_metadata<-data.frame(
 
 
 read.example.csv<-function(filename,examplename){
-  read.csv.auto.sep(paste0(example.data.path(examplename),filename))
+  read.csv(paste0(example.data.path(examplename),filename))
 }
 
 
@@ -58,6 +60,10 @@ load.example<-function(name,global_space=F){
                                     "independent.var" = c("district_localadmin", "when_continue", "children_0_4", "uasc_girls", "household_expenditure", "sep_forced", "usable_blanket", "hehe", NA))  %>% t %>% as.data.frame(., stringsAsFactors = F)
   colnames(ex$tf) <- c("select_one", "select_one_NA_heavy", "numeric", "numeric_NA_heavy", "select_multiple", "select_multiple_NA_heavy","logical", "fake", "NAs")
   ex$tf[,9] <- c(NULL, NULL)
+
+  ex$names_good <- c("MCNA_FoodSec1",	"health_score1",	"wash3_score1",	"MCNA_education_score1",	"protection_score5V2b",	"shelter_score1",	"live_score1")
+  ex$names_bad <- c("food",	"health_score1",	"wash",	"MCNA_education_score1",	"protection",	"shelter_score1",	"live_score1")
+
 
 
   if(global_space){

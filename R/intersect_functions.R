@@ -8,9 +8,10 @@
 expand_to_set_intersections<-function(data,varnames){
   ### sanitise inputs
   if(!is.data.frame(data))stop("input must be a data frame") #ensure first input is a dataframe
-  if(sum(varnames %in% names(data) < length(varnames))) #ensure all the variable names are in the dataframe
-    {culprits <- varnames[!(varnames %in% names(data))]
-    stop(paste0("all the variable names must be found in the data: ", culprits, " is/are not"))}
+  if(any(grep("&", varnames)))stop("can't have the '&' sign in your variable names, it will mess everything up!")
+  culprits <- varnames[!(varnames %in% names(data))]
+  #ensure all the variable names are in the dataframe
+  if(sum(varnames %in% names(data)) < length(varnames))stop(paste0("all the variable names must be found in the data: ", culprits, " is/are not"))
   if(sum(sapply(data[varnames], is.numeric)) < length(varnames))stop("all the variables must be numeric or logical") #ensure all columns are coercible to numbers
 
   ### creates a vector for the names of new variables using all combinations of varnames linked with '&'
@@ -60,15 +61,23 @@ set_intersection_plot<-function(set_percentages, nsets, nintersects = 12, label 
 #'@return A vector of the aggregated percent for each intersection
 #'@examples
 #'@export
-make_set_percentages <- function(data, varnames, exclude_unique = T){
+
+make_set_percentages <- function(data, varnames, weight_variable, exclude_unique = T){
+  ### sanitise inputs
+  if(!is.data.frame(data))stop("input must be a data frame") #ensure first input is a dataframe
+  if(any(grep("&", varnames)))stop("can't have the '&' sign in your variable names, it will mess everything up!")
+  culprits <- varnames[!(varnames %in% names(data))]
+  #ensure all the variable names are in the dataframe
+  if(sum(varnames %in% names(data)) < length(varnames))stop(paste0("all the variable names must be found in the data: ", culprits, " is/are not"))
 
   # create the design object with the weights if applicable
-  design <- map_to_design(~1,weights = data$weight, data = data)
+  design <- map_to_design(~1,weights = data[[weight_variable]], data = data)
 
   # assuming they are coercible to logical (e.g. 0's and  1's)
   # use the expand_composite_indicators function to return the intersected sets, and save the names in a new vector
   intersected_sets<- expand_composite_indicators_to_set_intersections(data,varnames)
   newvarnames <- names(intersected_sets)
+
   #### Take away the single indicators
   if(exclude_unique){
     intersected_sets <- intersected_sets[,-(1:length(newvarnames))]
@@ -76,13 +85,11 @@ make_set_percentages <- function(data, varnames, exclude_unique = T){
 
   #### Append the new composite indicators to the dataset
    data <- cbind(data, intersected_sets, stringsAsFactors = F)
-
   #### Calculate the average % using svymean and save in a named vector
   aggregated.results <- svymean(data[,newvarnames], design, na.rm = T)
   aggregated.results.named <- aggregated.results %>% unlist %>% as.data.frame(., stringsAsFactors =F, na.rm = T)
   aggregated.results <- aggregated.results.named[,1]
   names(aggregated.results) <- rownames(aggregated.results.named)
-
   #### Remove NAs from resulting vector
   aggregated.results <- aggregated.results[!is.na(aggregated.results)]
   return(aggregated.results)

@@ -55,8 +55,10 @@ load.example<-function(name,global_space=F){
   ex$names_good <- c("MCNA_FoodSec1",	"health_score1",	"wash3_score1",	"MCNA_education_score1",	"protection_score5V2b",	"shelter_score1",	"live_score1")
   ex$names_good_bad_sign <- c("MCNA_FoodSec1",	"health_score1",	"wash3_score1",	"MCNA_education_score1",	"protection_&score5V2b",	"shelter_score1",	"live_score1")
   ex$names_bad <- c("food",	"health_score1",	"wash",	"MCNA_education_score1",	"protection",	"shelter_score1",	"live_score1")
-
-
+  ex$weight_var <- "weight_nat"
+  ex$random_var_num <- "cwg_income"
+  ex$random_var_cat <- "hh_type"
+  ex$random_var_NA_heave <- "child_spouse"
 
   if(global_space){
     data<-ex$data
@@ -66,9 +68,3 @@ load.example<-function(name,global_space=F){
 
   return(ex)
 }
-
-
-
-
-
-

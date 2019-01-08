@@ -12,7 +12,8 @@ expand_to_set_intersections<-function(data,varnames){
   culprits <- varnames[!(varnames %in% names(data))]
   #ensure all the variable names are in the dataframe
   if(sum(varnames %in% names(data)) < length(varnames))stop(paste0("all the variable names must be found in the data: ", culprits, " is/are not"))
-  if(sum(sapply(data[varnames], is.numeric)) < length(varnames))stop("all the variables must be numeric or logical") #ensure all columns are coercible to numbers
+  if(!(sum(sapply(data[varnames], is.numeric)) == length(varnames)|
+     sum(sapply(data[varnames], is.logical)) == length(varnames)))stop("all the variables must be numeric or logical") #ensure all columns are coercible to numbers
 
   ### creates a vector for the names of new variables using all combinations of varnames linked with '&'
   newvarnames<-lapply(1:length(varnames),function(x){
@@ -45,11 +46,12 @@ expand_to_set_intersections<-function(data,varnames){
 set_intersection_plot<-function(set_percentages, nsets, nintersects = 12, label = NULL){
   set_percentages <- set_percentages*100 %>% round
   label <- as.character(label)
-  upset(fromExpression(set_percentages),
+  upset_object <- upset(fromExpression(set_percentages),
         order.by = "freq", nintersects = nintersects, nsets = nsets,
         mainbar.y.label = label
         #, mainbar.y.max = 50
   )
+  return(upset_object)
 }
 
 #'Create a vector containing the weighted percentages in each set
@@ -69,22 +71,28 @@ make_set_percentages <- function(data, varnames, weight_variable, exclude_unique
   culprits <- varnames[!(varnames %in% names(data))]
   #ensure all the variable names are in the dataframe
   if(sum(varnames %in% names(data)) < length(varnames))stop(paste0("all the variable names must be found in the data: ", culprits, " is/are not"))
+  #check weighting variable is in the function
+  # if the weights are not calculated by weights_of....
+  if(!weight_variable %in% names(data))stop("weighting variable missing or not in dataframe")
 
   # create the design object with the weights if applicable
-  design <- map_to_design(~1,weights = data[[weight_variable]], data = data)
+  design <- svydesign(~1, weights = data[[weight_variable]], data = data) #later will become map_to_design
 
   # assuming they are coercible to logical (e.g. 0's and  1's)
   # use the expand_composite_indicators function to return the intersected sets, and save the names in a new vector
-  intersected_sets<- expand_composite_indicators_to_set_intersections(data,varnames)
+  intersected_sets<- expand_to_set_intersections(data,varnames)
   newvarnames <- names(intersected_sets)
 
   #### Take away the single indicators
   if(exclude_unique){
-    intersected_sets <- intersected_sets[,-(1:length(newvarnames))]
-  }
+    intersected_sets <- intersected_sets[,-(1:length(varnames))]
+    newvarnames <- newvarnames[-(1:length(varnames))]}
 
-  #### Append the new composite indicators to the dataset
-   data <- cbind(data, intersected_sets, stringsAsFactors = F)
+  #### Append the new composite indicators to the dataset, fixing the names
+  final_names <- c(names(data), newvarnames)
+  data <- cbind(data, intersected_sets, stringsAsFactors = F)
+  names(data) <- final_names
+
   #### Calculate the average % using svymean and save in a named vector
   aggregated.results <- svymean(data[,newvarnames], design, na.rm = T)
   aggregated.results.named <- aggregated.results %>% unlist %>% as.data.frame(., stringsAsFactors =F, na.rm = T)
@@ -95,9 +103,27 @@ make_set_percentages <- function(data, varnames, weight_variable, exclude_unique
   return(aggregated.results)
 }
 
-  # aggregated.results must be a vector with the names given as set1, set2, set1&set2 ... etc (as given by expand_composite_indicators_to_set_intersections()):
-  # then we can do:
-  save_the_plot <- function(aggregated.results){
-  plot <- set_intersection_plot(aggregated.results)
-  savePlot(paste0(unique(data$hh_type),"intersections"))
+
+#'Create a plot from a dataset and variable names combining the make_set_percentages and set_percentage_plot functions
+#'
+#'@param set_percentages a names vector with the percentages for each combination
+#'@param nsets number of sets to look at
+#'@param nsets number of intersections to look at, the default being 12
+#'@param label the label to be added to the plot
+#'@return A plot object
+#'@examples
+#'@export
+make_set_percentages_plot <- function(data, varnames, weight_variable, exclude_unique = T){
+  case_load_percent <- make_set_percentages(data = data, varnames = varnames, weight_variable = weight_variable, exclude_unique = exclude_unique)
+  plot <- set_intersection_plot(case_load_percent)
+  return(plot)
   }
+
+
+#
+#   # aggregated.results must be a vector with the names given as set1, set2, set1&set2 ... etc (as given by expand_composite_indicators_to_set_intersections()):
+#   # then we can do:
+#   save_the_plot <- function(aggregated.results){
+#   plot <- set_intersection_plot(aggregated.results)
+#   savePlot(paste0(unique(data$hh_type),"intersections"))
+#   }

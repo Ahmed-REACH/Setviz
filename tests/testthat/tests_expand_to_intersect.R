@@ -16,19 +16,6 @@ good_vector <- example$names_good
 bad_vector <- example$names_bad
 good_vector_bad_sign <- example$names_good_bad_sign
 
-#
-# test_that("confidence_intervals_mean inputs correct",{
-#   ###This needs to be tested with a dependent var thats select one, one that's select multiple, one that's numeric etc
-#   expect_is(expand_to_set_intersections(tf$numeric[1], design = design), "data.frame") #numerical var
-#   expect_is(expand_to_set_intersections(tf$numeric_NA_heavy[1], design = design), "data.frame") #numerical var
-#   expect_is(expand_to_set_intersections(tf$logical[1], design = design), "data.frame")
-#   expect_warning(expand_to_set_intersections(tf$numeric[1], tf$select_one[2] , design = design))
-#   expect_error(expand_to_set_intersections(example$data, bad_vector))
-#   expect_error(expand_to_set_intersections(tf$select_one[1], design = design))
-#   expect_error(expand_to_set_intersections(tf$NAs[1], design = design))
-#   expect_error(expand_to_set_intersections(tf$fake[1], design = design)) #nonexistent.var
-#   expect_error(expand_to_set_intersections(tf$select_multiple[1], design = design)) # select multiple
-# })
 
 test_that("expand_to_set_intersections inputs correct",{
 expect_error(expand_to_set_intersections(example$data, bad_vector))
@@ -47,10 +34,10 @@ test_that("make_set_percentages inputs correct",{
 })
 
 test_that("make_set_percentages outputs correct",{
-  expect_equal(make_set_percentages(example$data, good_vector[c(1:2)], example$weight_var), 0.03639461)
+  expect_equal(as.numeric(make_set_percentages(example$data, good_vector[c(1:2)], example$weight_var)), 0.03639461)
   expect_error(make_set_percentages(example$data, good_vector_bad_sign), "can't have the '&' sign in your variable names, it will mess everything up!")
   expect_error(make_set_percentages(example$data_no_num, good_vector), "data.frame")
-  expect_is(make_set_percentages(example$data, good_vector, example$weight_var), "vector")
+  expect_is(make_set_percentages(example$data, good_vector, example$weight_var), "numeric")
 })
 
 

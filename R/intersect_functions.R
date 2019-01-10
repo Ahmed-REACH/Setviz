@@ -37,7 +37,6 @@ expand_to_set_intersections<-function(data,varnames){
 #'Create a plot from the percentages in each set
 #'
 #'@param set_percentages a names vector with the percentages for each combination
-#'@param nsets number of sets to look at
 #'@param nsets number of intersections to look at, the default being 12
 #'@param label the label to be added to the plot
 #'@return A plot object
@@ -64,9 +63,48 @@ set_intersection_plot<-function(set_percentages, nintersects = 12, label = NULL)
 #'@examples
 #'@export
 
-make_set_percentages <- function(data, varnames, weight_variable, exclude_unique = T){
-  ### sanitise inputs
+add_set_intersection_to_df <- function(data, varnames, exclude_unique = T){
+### Sanitise inputs
   if(!is.data.frame(data))stop("input must be a data frame") #ensure first input is a dataframe
+  ###this function will change to reflect calculating the design from the sampling frame with map_to_design
+  if(any(grep("&", varnames)))stop("can't have the '&' sign in your variable names, it will mess everything up!")
+  culprits <- varnames[!(varnames %in% names(data))]
+  #ensure all the variable names are in the dataframe
+  if(sum(varnames %in% names(data)) < length(varnames))stop(paste0("all the variable names must be found in the data: ", culprits, " is/are not"))
+
+#### Use the expand_composite_indicators function to return the intersected sets,
+  intersected_sets<- expand_to_set_intersections(data,varnames)
+  newvarnames <- names(intersected_sets) #and save the names in a new vector
+
+#### Take away the single indicators
+  if(exclude_unique){
+    intersected_sets <- intersected_sets[,-(1:length(varnames))]
+    newvarnames <- newvarnames[-(1:length(varnames))]}
+
+#### Append the new composite indicators to the dataset, fixing the names
+  final_names <- c(names(data), newvarnames)
+  data <- cbind(data, intersected_sets, stringsAsFactors = F)
+  names(data) <- final_names
+
+  results <- list()
+  results$data <- data
+  results$newvarnames <- newvarnames
+return(results)
+}
+
+
+#'Create a vector containing the weighted percentages in each set
+#'
+#'@param data a dataframe containing all the intersected sets
+#'@param intersected_names the names of the intersected sets
+#'@param weight_variable the variables in the dataset containing the weights
+#'@return A vector of the aggregated percent for each intersection
+#'@examples
+#'@export
+
+svymean_intersected_sets <- function(data, intersected_names, weight_variable){
+  # this function will change to reflect calculating the design from the sampling frame with map_to_design
+### Sanitise inputs
   if(any(grep("&", varnames)))stop("can't have the '&' sign in your variable names, it will mess everything up!")
   culprits <- varnames[!(varnames %in% names(data))]
   #ensure all the variable names are in the dataframe
@@ -75,30 +113,15 @@ make_set_percentages <- function(data, varnames, weight_variable, exclude_unique
   # if the weights are not calculated by weights_of....
   if(!weight_variable %in% names(data))stop("weighting variable missing or not in dataframe")
 
-  # create the design object with the weights if applicable
+#### Create the design object with the weights if applicable
   design <- survey::svydesign(~1, weights = data[[weight_variable]], data = data) #later will become map_to_design
 
-  # assuming they are coercible to logical (e.g. 0's and  1's)
-  # use the expand_composite_indicators function to return the intersected sets, and save the names in a new vector
-  intersected_sets<- expand_to_set_intersections(data,varnames)
-  newvarnames <- names(intersected_sets)
-
-  #### Take away the single indicators
-  if(exclude_unique){
-    intersected_sets <- intersected_sets[,-(1:length(varnames))]
-    newvarnames <- newvarnames[-(1:length(varnames))]}
-
-  #### Append the new composite indicators to the dataset, fixing the names
-  final_names <- c(names(data), newvarnames)
-  data <- cbind(data, intersected_sets, stringsAsFactors = F)
-  names(data) <- final_names
-
-  #### Calculate the average % using svymean and save in a named vector
+#### Calculate the average % using svymean and save in a named vector
   aggregated.results <- svymean(data[,newvarnames], design, na.rm = T)
   aggregated.results.named <- aggregated.results %>% unlist %>% as.data.frame(., stringsAsFactors =F, na.rm = T)
   aggregated.results <- aggregated.results.named[,1]
   names(aggregated.results) <- rownames(aggregated.results.named)
-  #### Remove NAs from resulting vector
+#### Remove NAs from resulting vector
   aggregated.results <- aggregated.results[!is.na(aggregated.results)]
   return(aggregated.results)
 }
@@ -114,11 +137,12 @@ make_set_percentages <- function(data, varnames, weight_variable, exclude_unique
 #'@examples
 #'@export
 make_set_percentages_plot <- function(data, varnames, weight_variable, nintersects = 12, exclude_unique = T, label){
-  case_load_percent <- make_set_percentages(data = data, varnames = varnames, weight_variable = weight_variable, exclude_unique = exclude_unique)
+  intersections_df <- expand_to_set_intersections(data, varnames)
+  expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = T)
+  case_load_percent <- svymean_intersected_sets(expanded_df$data, expanded_df$newvarnames)
   plot <- set_intersection_plot(case_load_percent, nintersects, label)
   return(plot)
   }
-
 
 #
 #   # aggregated.results must be a vector with the names given as set1, set2, set1&set2 ... etc (as given by expand_composite_indicators_to_set_intersections()):

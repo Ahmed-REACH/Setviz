@@ -8,6 +8,7 @@ devtools::install_github("r-lib/devtools")
 
 library(roxygen2)
 library(devtools)
+library(survey)
 
 has_devel()
 print(has_devel())
@@ -21,3 +22,6 @@ has_rtools()
 build()
 devtools::load_all()
 devtools::document()
+devtools::test()
+
+use_this::use_vignette("my-vignette")

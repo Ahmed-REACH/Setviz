@@ -4,7 +4,7 @@
 \alias{make_set_percentages}
 \title{Create a vector containing the weighted percentages in each set}
 \usage{
-make_set_percentages(data, varnames, exclude_unique = T)
+make_set_percentages(data, varnames, weight_variable, exclude_unique = T)
 }
 \arguments{
 \item{data}{a dataframe containing all the sets for each record, coercible to 1,0}

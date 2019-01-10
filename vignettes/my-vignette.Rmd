@@ -1,0 +1,64 @@
+---
+title: "An example of set visualisation"
+author: "Eliora Henzler"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Below is an example of how to calculate set intersections from the Iraq MSNA 2018 with REACH.
+
+## Vignette Info
+
+The vignette shows how to use the three main functions of the package and the graph you can expect afterward. In this case, we are not interested in single variables (no intersection) and we want to see 10 intersections in total
+
+```{r}
+setwd("./..")
+data <- read.csv("./tests/test_data/example1/data.csv") #load data in the example
+varnames <- c("Food",	"Health",	"WASH",	"Education",	"Protection",	"Shelter",	"Livelihoods") #fix the names that you want intersections for 
+```
+
+## Calculating intersections
+
+Next, use the functions to get the intersections
+
+```{r}
+intersects <- expand_to_set_intersections(data, varnames)
+
+```
+
+```{r, fig.show='hold'}
+make_set_percentages_plot(data, varnames, "weight_nat", 10, exclude_unique = T, "PIN_Intersections")
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))

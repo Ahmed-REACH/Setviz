@@ -43,11 +43,11 @@ expand_to_set_intersections<-function(data,varnames){
 #'@return A plot object
 #'@examples
 #'@export
-set_intersection_plot<-function(set_percentages, nsets, nintersects = 12, label = NULL){
+set_intersection_plot<-function(set_percentages, nintersects = 12, label = NULL){
   set_percentages <- set_percentages*100 %>% round
   label <- as.character(label)
   upset_object <- upset(fromExpression(set_percentages),
-        order.by = "freq", nintersects = nintersects, nsets = nsets,
+        order.by = "freq", nintersects = nintersects,
         mainbar.y.label = label
         #, mainbar.y.max = 50
   )
@@ -76,7 +76,7 @@ make_set_percentages <- function(data, varnames, weight_variable, exclude_unique
   if(!weight_variable %in% names(data))stop("weighting variable missing or not in dataframe")
 
   # create the design object with the weights if applicable
-  design <- svydesign(~1, weights = data[[weight_variable]], data = data) #later will become map_to_design
+  design <- survey::svydesign(~1, weights = data[[weight_variable]], data = data) #later will become map_to_design
 
   # assuming they are coercible to logical (e.g. 0's and  1's)
   # use the expand_composite_indicators function to return the intersected sets, and save the names in a new vector
@@ -113,9 +113,9 @@ make_set_percentages <- function(data, varnames, weight_variable, exclude_unique
 #'@return A plot object
 #'@examples
 #'@export
-make_set_percentages_plot <- function(data, varnames, weight_variable, exclude_unique = T){
+make_set_percentages_plot <- function(data, varnames, weight_variable, nintersects = 12, exclude_unique = T, label){
   case_load_percent <- make_set_percentages(data = data, varnames = varnames, weight_variable = weight_variable, exclude_unique = exclude_unique)
-  plot <- set_intersection_plot(case_load_percent)
+  plot <- set_intersection_plot(case_load_percent, nintersects, label)
   return(plot)
   }
 

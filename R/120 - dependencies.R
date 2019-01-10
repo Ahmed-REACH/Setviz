@@ -7,7 +7,7 @@ source_folders<-c("./R/hypegrammaR",
 # source them all:
 sapply(source_folders,.source_dir)
 # external packages to install/load:
-.dependencies<-c("dplyr","purrr","questionr","data.table","tidyr","crayon","magrittr","rstudioapi","igraph","knitr","rlist","ggplot2","ggthemes","extrafont","gridExtra")
+.dependencies<-c("dplyr","purrr","questionr","data.table","tidyr","survey","magrittr","rstudioapi","igraph","knitr","rlist","ggplot2","ggthemes","extrafont","UpSetR")
 
 
 
@@ -15,6 +15,4 @@ sapply(source_folders,.source_dir)
 .install_dependencies(.dependencies)
 .load_dependencies(.dependencies)
 
-# reach "hypegrammaR" package ( dependencies installed and loaded, hypegrammaR loaded locally from .R files)
-# source("./internal/R/121 - hypegrammar_dependencies.R")
 

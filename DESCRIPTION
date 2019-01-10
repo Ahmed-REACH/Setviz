@@ -13,5 +13,8 @@ LazyData: true
 Imports: dplyr, roxygen2, reachR, UpSetR, magrittr, survey
 Suggests: 
     hypegrammaR,
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
 RoxygenNote: 6.1.1
+VignetteBuilder: knitr

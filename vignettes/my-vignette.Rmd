@@ -23,9 +23,12 @@ Below is an example of how to calculate set intersections from the Iraq MSNA 201
 The vignette shows how to use the three main functions of the package and the graph you can expect afterward. In this case, we are not interested in single variables (no intersection) and we want to see 10 intersections in total
 
 ```{r}
-getwd()
-setwd("./..")
-data <- read.csv("./tests/test_data/example1/data.csv") #load data in the example
+library("Setviz")
+library("dplyr")
+library("survey")
+library("UpSetR")
+
+# data <-read.csv("./data.csv") #load data in the example
 varnames <- c("Food",	"Health",	"WASH",	"Education",	"Protection",	"Shelter",	"Livelihoods") #fix the names that you want intersections for 
 ```
 
@@ -40,14 +43,14 @@ make_set_percentages_plot(data, varnames, "weight_nat", 10, exclude_unique = T, 
 
 Next, use the functions to get the intersections
 
-```{r}
+```{r, eval=  FALSE}
 intersects <- expand_to_set_intersections(data, varnames)
 head(intersects$data[,c(20:25)]) ## Get an overview of the intersected sets
 
 ```
 
 
-```{r}
+```{r, eval=  FALSE}
 expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = T)
 head(expanded_df$data)
 ```

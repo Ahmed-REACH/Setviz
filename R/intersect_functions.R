@@ -105,10 +105,9 @@ return(results)
 svymean_intersected_sets <- function(data, intersected_names, weight_variable){
   # this function will change to reflect calculating the design from the sampling frame with map_to_design
 ### Sanitise inputs
-  if(any(grep("&", varnames)))stop("can't have the '&' sign in your variable names, it will mess everything up!")
-  culprits <- varnames[!(varnames %in% names(data))]
+  culprits <- intersected_names[!(intersected_names %in% names(data))]
   #ensure all the variable names are in the dataframe
-  if(sum(varnames %in% names(data)) < length(varnames))stop(paste0("all the variable names must be found in the data: ", culprits, " is/are not"))
+  if(sum(intersected_names %in% names(data)) < length(intersected_names))stop(paste0("all the variable names must be found in the data: ", culprits, " is/are not"))
   #check weighting variable is in the function
   # if the weights are not calculated by weights_of....
   if(!weight_variable %in% names(data))stop("weighting variable missing or not in dataframe")
@@ -117,7 +116,7 @@ svymean_intersected_sets <- function(data, intersected_names, weight_variable){
   design <- survey::svydesign(~1, weights = data[[weight_variable]], data = data) #later will become map_to_design
 
 #### Calculate the average % using svymean and save in a named vector
-  aggregated.results <- svymean(data[,newvarnames], design, na.rm = T)
+  aggregated.results <- svymean(data[,intersected_names], design, na.rm = T)
   aggregated.results.named <- aggregated.results %>% unlist %>% as.data.frame(., stringsAsFactors =F, na.rm = T)
   aggregated.results <- aggregated.results.named[,1]
   names(aggregated.results) <- rownames(aggregated.results.named)
@@ -139,7 +138,7 @@ svymean_intersected_sets <- function(data, intersected_names, weight_variable){
 make_set_percentages_plot <- function(data, varnames, weight_variable, nintersects = 12, exclude_unique = T, label){
   intersections_df <- expand_to_set_intersections(data, varnames)
   expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = T)
-  case_load_percent <- svymean_intersected_sets(expanded_df$data, expanded_df$newvarnames)
+  case_load_percent <- svymean_intersected_sets(expanded_df$data, expanded_df$newvarnames, weight_variable)
   plot <- set_intersection_plot(case_load_percent, nintersects, label)
   return(plot)
   }

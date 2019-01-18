@@ -9,10 +9,6 @@ sapply(source_folders,.source_dir)
 # external packages to install/load:
 .dependencies<-c("dplyr","purrr","questionr","data.table","tidyr","survey","magrittr","rstudioapi","igraph","knitr","rlist","ggplot2","ggthemes","extrafont","UpSetR")
 
-
-
 # load external packages:
 .install_dependencies(.dependencies)
 .load_dependencies(.dependencies)
-
-

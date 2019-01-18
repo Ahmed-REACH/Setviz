@@ -19,15 +19,20 @@ knitr::opts_chunk$set(
 
 # Vignette Info
 The vignette shows how to use the main functions of the package and the graph you can expect afterward. 
+
+
 ## Quickstart guide
 Below is an example of how to calculate set intersections from the Iraq MSNA 2018 with REACH.
 
-```{r, warning = FALSE}
+```{r, results='hide', message=FALSE}
 library("Setviz")
 library("dplyr")
 library("survey")
 library("UpSetR")
+```
 
+### Preparation
+```{r, warning = FALSE}
 #Load your data
 #Fix the names that you want intersections for 
 varnames <- c("Food",	"Health",	"WASH",	"Education",	"Protection",	"Shelter",	"Livelihoods") 
@@ -39,11 +44,11 @@ data[,varnames] %>% str
 In this case, we are not interested in single variables (no intersection) and we want to see 10 intersections in total
 
 ```{r, fig.show='hold'}
-plot_and_save_set_percentages(data, varnames, "weight_nat", 10, exclude_unique = T, "PIN_Intersections")
+plot_set_percentages(data, varnames, "weight_nat", 10, exclude_unique = T, "PIN_Intersections")
 ```
 
-## Calculating intersections
-To save the same plot for different groups in your dataset, define which variable you want to disaggregate by. The different plots will be saved in the main folder as PDFs
+## Calculating multiple set intersections with a plot for each, using lapply
+To save the same plot for different groups in your dataset, define which variable you want to disaggregate by. The different plots can be saved as jpeg or pdf. 
 
 ```{r, fig.show='hold'}
 
@@ -52,7 +57,7 @@ by <- "hh_type"
 
 split.data.frame(data, data[[by]]) %>% lapply(function(x){
   label <- paste0(unique(x[[by]]),"PIN_intersections")
-    plot_and_save_set_percentages(x, varnames,  "weight_nat", 10, exclude_unique = T, label)
+    plot_set_percentages(x, varnames,  "weight_nat", 10, exclude_unique = T, label)
     })
 
 ```

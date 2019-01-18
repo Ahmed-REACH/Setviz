@@ -24,4 +24,4 @@ devtools::load_all()
 devtools::document()
 devtools::test()
 
-use_this::use_vignette("my-vignette")
+

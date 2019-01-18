@@ -39,17 +39,12 @@ load.example<-function(name,global_space=F){
     paste0(ex$path,file)
   }
 
-  ex$data<-exfile("data.csv")
+  ex$data<- data
   # ex$questionnaire<-load_questionnaire(ex$data,
   #
   #                                       questions.file = exfilepath("kobo questions.csv"),
   #                                       choices.file = exfilepath("kobo choices.csv"),
   #                                       choices.label.column.to.use = ex$choice.label.column.to.use)
-
-  ex$tf <- data.frame("dependent.var" = c("population_group", "when_continue", "males_13_15","uasc_boys", "household_expenditure", "sep_accidental", "household_expenditure.father", "bla", NA),
-                                    "independent.var" = c("district_localadmin", "when_continue", "children_0_4", "uasc_girls", "household_expenditure", "sep_forced", "usable_blanket", "hehe", NA))  %>% t %>% as.data.frame(., stringsAsFactors = F)
-  colnames(ex$tf) <- c("select_one", "select_one_NA_heavy", "numeric", "numeric_NA_heavy", "select_multiple", "select_multiple_NA_heavy","logical", "fake", "NAs")
-  ex$tf[,9] <- c(NULL, NULL)
 
   ex$names_good <- c("Food",	"Health",	"WASH",	"Education",	"Protection",	"Shelter",	"Livelihoods")
   ex$names_good_bad_sign <- c("MCNA_FoodSec1",	"health_score1",	"wash3_score1",	"MCNA_education_score1",	"protection_&score5V2b",	"shelter_score1",	"live_score1")
@@ -59,11 +54,6 @@ load.example<-function(name,global_space=F){
   ex$random_var_cat <- "hh_type"
   ex$random_var_NA_heave <- "child_spouse"
 
-  if(global_space){
-    data<-ex$data
-    questionnaire<-ex$questionnaire
-    return(NULL)
-  }
 
   return(ex)
 }

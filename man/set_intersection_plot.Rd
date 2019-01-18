@@ -4,17 +4,14 @@
 \alias{set_intersection_plot}
 \title{Create a plot from the percentages in each set}
 \usage{
-set_intersection_plot(set_percentages, nsets, nintersects = 12,
-  label = NULL)
+set_intersection_plot(set_percentages, nintersects = 12, label = NULL)
 }
 \arguments{
 \item{set_percentages}{a names vector with the percentages for each combination}
 
-\item{nsets}{number of sets to look at}
+\item{nintersects}{number of intersections to look at, the default being 12}
 
 \item{label}{the label to be added to the plot}
-
-\item{nsets}{number of intersections to look at, the default being 12}
 }
 \value{
 A plot object

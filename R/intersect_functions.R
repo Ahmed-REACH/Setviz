@@ -37,7 +37,7 @@ expand_to_set_intersections<-function(data,varnames){
 #'Create a plot from the percentages in each set
 #'
 #'@param set_percentages a names vector with the percentages for each combination
-#'@param nsets number of intersections to look at, the default being 12
+#'@param nintersects number of intersections to look at, the default being 12
 #'@param label the label to be added to the plot
 #'@return A plot object
 #'@examples
@@ -56,9 +56,8 @@ set_intersection_plot<-function(set_percentages, nintersects = 12, label = NULL)
 #'Create a vector containing the weighted percentages in each set
 #'
 #'@param data a dataframe containing all the sets for each record, coercible to 1,0
-#'@param nsets number of sets to look at
-#'@param nsets number of intersections to look at, the default being 12
-#'@param label the label to be added to the plot
+#'@param varnames  a vector containing the names of variables to be used in the intersection
+#'@param exclude_unique whether the set intersections should include singular sets (i.e. that one variable). Note that if this is set to True, the total set size on the left will be wrong
 #'@return A vector of the aggregated percent for each intersection
 #'@examples
 #'@export
@@ -96,24 +95,28 @@ return(results)
 #'Create a vector containing the weighted percentages in each set
 #'
 #'@param data a dataframe containing all the intersected sets
-#'@param intersected_names the names of the intersected sets
-#'@param weight_variable the variables in the dataset containing the weights
-#'@return A vector of the aggregated percent for each intersection
+#'@param intersected_names the names of the intersected sets: as combinations of variable names combined with '&'
+#'@param weight_variable character string: the name of the variable in the dataset containing the weights
+#'@return A plot of the intersection
 #'@examples
 #'@export
 
-svymean_intersected_sets <- function(data, intersected_names, weight_variable){
+svymean_intersected_sets <- function(data, intersected_names, weight_variable = NULL){
   # this function will change to reflect calculating the design from the sampling frame with map_to_design
 ### Sanitise inputs
   culprits <- intersected_names[!(intersected_names %in% names(data))]
   #ensure all the variable names are in the dataframe
   if(sum(intersected_names %in% names(data)) < length(intersected_names))stop(paste0("all the variable names must be found in the data: ", culprits, " is/are not"))
-  #check weighting variable is in the function
-  # if the weights are not calculated by weights_of....
-  if(!weight_variable %in% names(data))stop("weighting variable missing or not in dataframe")
 
 #### Create the design object with the weights if applicable
-  design <- survey::svydesign(~1, weights = data[[weight_variable]], data = data) #later will become map_to_design
+  if(!is.null(weight_variable)){
+    #check weighting variable is in the function
+    # if the weights are not calculated by weights_of....
+    if(!weight_variable %in% names(data))stop("weighting variable missing or not in dataframe")
+    design <- survey::svydesign(~1, weights = data[[weight_variable]], data = data) #later will become map_to_design
+  }else{
+    design <- survey::svydesign(~1, weights = NULL, data = data)
+  }
 
 #### Calculate the average % using svymean and save in a named vector
   aggregated.results <- svymean(data[,intersected_names], design, na.rm = T)
@@ -128,25 +131,45 @@ svymean_intersected_sets <- function(data, intersected_names, weight_variable){
 
 #'Create a plot from a dataset and variable names combining the make_set_percentages and set_percentage_plot functions
 #'
-#'@param set_percentages a names vector with the percentages for each combination
-#'@param nsets number of sets to look at
-#'@param nsets number of intersections to look at, the default being 12
+#'@param data  a dataframe containing all the 1,0 indicators in varnames
+#'@param varnames  a vector containing the names of variables to be used in the intersection
+#'@param weight_variable a character string: the name of the variable in the dataset containing the weights, defaults to NULL
+#'@param nintersects number of intersections to look at, the default being 12
+#'@param exclude_unique whether the set intersections should include singular sets (i.e. that one variable). Note that if this is set to True, the total set size on the left will be wrong
 #'@param label the label to be added to the plot
-#'@return A plot object
-#'@examples
+#'@return An UpSetR plot object with the different sets
+#'@examples see vignette
 #'@export
-make_set_percentages_plot <- function(data, varnames, weight_variable, nintersects = 12, exclude_unique = T, label){
+plot_and_save_set_percentages <- function(data, varnames, weight_variable = NULL, nintersects = 12, exclude_unique = T, label){
   intersections_df <- expand_to_set_intersections(data, varnames)
   expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = T)
   case_load_percent <- svymean_intersected_sets(expanded_df$data, expanded_df$newvarnames, weight_variable)
-  plot <- set_intersection_plot(case_load_percent, nintersects, label)
-  return(plot)
+  theplot<- set_intersection_plot(case_load_percent, nintersects, label)
+  jpeg("test.jpg")
+  set_intersection_plot(case_load_percent, nintersects, label)
+  dev.off()
+  # on.exit()
+  return(set_intersection_plot(case_load_percent, nintersects, label))
   }
 
-#
-#   # aggregated.results must be a vector with the names given as set1, set2, set1&set2 ... etc (as given by expand_composite_indicators_to_set_intersections()):
-#   # then we can do:
-#   save_the_plot <- function(aggregated.results){
-#   plot <- set_intersection_plot(aggregated.results)
-#   savePlot(paste0(unique(data$hh_type),"intersections"))
-#   }
+
+#'Create a plot from a dataset and variable names combining the make_set_percentages and set_percentage_plot functions
+#'
+#'@param data  a dataframe containing all the 1,0 indicators in varnames
+#'@param varnames  a vector containing the names of variables to be used in the intersection
+#'@param by a character string: the name of the variable in the dataset that you want to disaggregate by
+#'@param weight_variable a character string: the name of the variable in the dataset containing the weights, defaults to NULL
+#'@param nintersects number of intersections to look at, the default being 12
+#'@param exclude_unique whether the set intersections should include singular sets (i.e. that one variable). Note that if this is set to True, the total set size on the left will be wrong
+#'@param label the label to be added to the plot
+#'@return An UpSetR plot object with the different sets
+#'@examples see vignette
+#'@export
+make_disaggregated_set_percentages_plots <- function(data, varnames, by, weight_variable = NULL, nintersects = 12, exclude_unique = T, label = NULL){
+  if(!(by %in% names(data)))stop("The name of the variable to disaggregate by must be in the data column headers")
+  split.data.frame(data, data[[by]]) %>% lapply(function(x){
+    plot_and_save_set_percentages(x, varnames, by, weight_variable, nintersects, exclude_unique, label)
+  })
+  }
+
+

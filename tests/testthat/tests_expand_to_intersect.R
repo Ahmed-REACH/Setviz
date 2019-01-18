@@ -25,20 +25,20 @@ expect_is(expand_to_set_intersections(example$data, good_vector), "data.frame")
   })
 
 
-test_that("make_set_percentages inputs correct",{
-  expect_error(make_set_percentages(example$data, bad_vector, example$weight_var))
-  expect_error(make_set_percentages(example$data, good_vector, example$random_var))
-  expect_error(make_set_percentages(example$data, good_vector_bad_sign, example$weight_var), "can't have the '&' sign in your variable names, it will mess everything up!")
-  expect_error(make_set_percentages(example$data_no_num, good_vector))
-  expect_is(make_set_percentages(example$data, good_vector, example$weight_var), "vector")
-})
-
-test_that("make_set_percentages outputs correct",{
-  expect_equal(as.numeric(make_set_percentages(example$data, good_vector[c(1:2)], example$weight_var)), 0.03639461)
-  expect_error(make_set_percentages(example$data, good_vector_bad_sign), "can't have the '&' sign in your variable names, it will mess everything up!")
-  expect_error(make_set_percentages(example$data_no_num, good_vector), "data.frame")
-  expect_is(make_set_percentages(example$data, good_vector, example$weight_var), "numeric")
-})
+# test_that("make_set_percentages inputs correct",{
+#   expect_error(make_set_percentages(example$data, bad_vector, example$weight_var))
+#   expect_error(make_set_percentages(example$data, good_vector, example$random_var))
+#   expect_error(make_set_percentages(example$data, good_vector_bad_sign, example$weight_var), "can't have the '&' sign in your variable names, it will mess everything up!")
+#   expect_error(make_set_percentages(example$data_no_num, good_vector))
+#   expect_is(make_set_percentages(example$data, good_vector, example$weight_var), "vector")
+# })
+#
+# test_that("make_set_percentages outputs correct",{
+#   expect_equal(as.numeric(make_set_percentages(example$data, good_vector[c(1:2)], example$weight_var)), 0.03639461)
+#   expect_error(make_set_percentages(example$data, good_vector_bad_sign), "can't have the '&' sign in your variable names, it will mess everything up!")
+#   expect_error(make_set_percentages(example$data_no_num, good_vector), "data.frame")
+#   expect_is(make_set_percentages(example$data, good_vector, example$weight_var), "numeric")
+# })
 
 
 # test_that("set_intersection_plot inputs correct",{

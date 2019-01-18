@@ -140,36 +140,12 @@ svymean_intersected_sets <- function(data, intersected_names, weight_variable = 
 #'@return An UpSetR plot object with the different sets
 #'@examples see vignette
 #'@export
-plot_and_save_set_percentages <- function(data, varnames, weight_variable = NULL, nintersects = 12, exclude_unique = T, label){
+plot_and_save_set_percentages <- function(data, varnames, weight_variable = NULL, nintersects = 12, exclude_unique = T, label = NULL){
   intersections_df <- expand_to_set_intersections(data, varnames)
   expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = T)
   case_load_percent <- svymean_intersected_sets(expanded_df$data, expanded_df$newvarnames, weight_variable)
-  theplot<- set_intersection_plot(case_load_percent, nintersects, label)
-  jpeg("test.jpg")
   set_intersection_plot(case_load_percent, nintersects, label)
-  dev.off()
   # on.exit()
-  return(set_intersection_plot(case_load_percent, nintersects, label))
-  }
-
-
-#'Create a plot from a dataset and variable names combining the make_set_percentages and set_percentage_plot functions
-#'
-#'@param data  a dataframe containing all the 1,0 indicators in varnames
-#'@param varnames  a vector containing the names of variables to be used in the intersection
-#'@param by a character string: the name of the variable in the dataset that you want to disaggregate by
-#'@param weight_variable a character string: the name of the variable in the dataset containing the weights, defaults to NULL
-#'@param nintersects number of intersections to look at, the default being 12
-#'@param exclude_unique whether the set intersections should include singular sets (i.e. that one variable). Note that if this is set to True, the total set size on the left will be wrong
-#'@param label the label to be added to the plot
-#'@return An UpSetR plot object with the different sets
-#'@examples see vignette
-#'@export
-make_disaggregated_set_percentages_plots <- function(data, varnames, by, weight_variable = NULL, nintersects = 12, exclude_unique = T, label = NULL){
-  if(!(by %in% names(data)))stop("The name of the variable to disaggregate by must be in the data column headers")
-  split.data.frame(data, data[[by]]) %>% lapply(function(x){
-    plot_and_save_set_percentages(x, varnames, by, weight_variable, nintersects, exclude_unique, label)
-  })
   }
 
 

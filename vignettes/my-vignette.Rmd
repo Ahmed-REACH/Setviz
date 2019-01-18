@@ -48,12 +48,11 @@ To save the same plot for different groups in your dataset, define which variabl
 ```{r, fig.show='hold'}
 
 data$hh_type %>% table
-make_disaggregated_set_percentages_plots(data, varnames, "hh_type", "weight_nat", 10, exclude_unique = T, label =  "PIN_Intersections")
+by <- "hh_type"
 
-```
+split.data.frame(data, data[[by]]) %>% lapply(function(x){
+  label <- paste0(unique(x[[by]]),"PIN_intersections")
+    plot_and_save_set_percentages(x, varnames,  "weight_nat", 10, exclude_unique = T, label)
+    })
 
-
-```{r, eval=  FALSE}
-expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = T)
-head(expanded_df$data)
 ```

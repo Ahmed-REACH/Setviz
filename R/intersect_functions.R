@@ -38,16 +38,18 @@ expand_to_set_intersections<-function(data,varnames){
 #'
 #'@param set_percentages a names vector with the percentages for each combination
 #'@param nintersects number of intersections to look at, the default being 12
+#'@param nsets number of unique sets making up the intersection
 #'@param label the label to be added to the plot
 #'@return A plot object
 #'@examples
 #'@export
-set_intersection_plot<-function(set_percentages, nintersects = 12, label = NULL){
+set_intersection_plot<-function(set_percentages, nintersects = 12, nsets = NULL, label = NULL){
   set_percentages <- set_percentages*100 %>% round
   label <- as.character(label)
   upset_object <- upset(fromExpression(set_percentages),
         order.by = "freq", nintersects = nintersects,
         mainbar.y.label = label
+
         #, mainbar.y.max = 50
   )
   return(upset_object)
@@ -144,7 +146,8 @@ plot_set_percentages <- function(data, varnames, weight_variable = NULL, ninters
   intersections_df <- expand_to_set_intersections(data, varnames)
   expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = T)
   case_load_percent <- svymean_intersected_sets(expanded_df$data, expanded_df$newvarnames, weight_variable)
-  set_intersection_plot(case_load_percent, nintersects, label)
+  nsets <- length(varnames)
+  set_intersection_plot(case_load_percent, nintersects = nintersects, nsets = nsets, label)
   # on.exit()
   }
 

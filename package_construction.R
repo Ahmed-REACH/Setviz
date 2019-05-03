@@ -3,8 +3,9 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path));setwd("./")
 getwd()
 rstudioapi::isAvailable("0.99.149")
 
-require(c("devtools", "roxygen2", "testthat", "knitr","UpSetR", "survey"))
+
 devtools::install_github("r-lib/devtools")
+require(c("devtools", "roxygen2", "testthat", "knitr","UpSetR", "survey"))
 
 library(roxygen2)
 library(devtools)
@@ -23,5 +24,6 @@ build()
 devtools::load_all()
 devtools::document()
 devtools::test()
+devtools::build_vignettes()
 
 

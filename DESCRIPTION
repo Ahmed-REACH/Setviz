@@ -10,7 +10,7 @@ Description: This package lets you visualise intersecting sets.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Imports: dplyr, roxygen2, reachR, UpSetR, magrittr, survey
+Imports: dplyr, roxygen2, UpSetR, magrittr, survey
 Suggests: 
     hypegrammaR,
     testthat,

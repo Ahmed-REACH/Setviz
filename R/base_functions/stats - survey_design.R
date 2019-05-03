@@ -4,7 +4,6 @@ combine_weighting_functions<-function(weights_function_1,weights_function_2){
   normweights<-function(w){w*length(w)/sum(w)}
   normW2byW1<-function(w1,w2){
 
-
     w1_proportions_is<-(w2 %>% split(names(w1)) %>% sapply(sum)) %>% normweights()
     w1_proportions_should<-w1 %>% split(names(w1)) %>% sapply(sum) %>% normweights
     w1_proportions_should<-w1_proportions_should[match(names(w1_proportions_is),names(w1_proportions_should))]

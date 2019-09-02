@@ -51,10 +51,10 @@ set_intersection_plot<-function(set_percentages, nintersects = 12, nsets = NULL,
   set_percentages <- set_percentages*100 %>% round
   label <- as.character(label)
   upset_object <- upset(fromExpression(set_percentages),
-        order.by = "freq", nintersects = nintersects,
+        order.by = "freq",
+        nintersects = nintersects,
+        nsets = nsets,
         mainbar.y.label = label
-
-        #, mainbar.y.max = 50
   )
   return(upset_object)
 }

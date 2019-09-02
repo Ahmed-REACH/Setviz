@@ -103,7 +103,7 @@ return(results)
 #'@examples
 #'@export
 
-svymean_intersected_sets <- function(data, intersected_names, weight_variable = NULL){
+svymean_intersected_sets <- function(data, intersected_names, weight_variable = NULL, weighting_function = NULL){
   # this function will change to reflect calculating the design from the sampling frame with map_to_design
 ### Sanitise inputs
   culprits <- intersected_names[!(intersected_names %in% names(data))]
@@ -116,7 +116,9 @@ svymean_intersected_sets <- function(data, intersected_names, weight_variable = 
     # if the weights are not calculated by weights_of....
     if(!weight_variable %in% names(data))stop("weighting variable missing or not in dataframe")
     design <- survey::svydesign(~1, weights = data[[weight_variable]], data = data) #later will become map_to_design
-  }else{
+  } else if (!is.null(weighting_function)) {
+    design <- survey::svydesign(~1, weights = weighting_function(data), data = data)
+  } else {
     design <- survey::svydesign(~1, weights = NULL, data = data)
   }
 
@@ -142,7 +144,7 @@ svymean_intersected_sets <- function(data, intersected_names, weight_variable = 
 #'@return An UpSetR plot object with the different sets
 #'@examples see vignette
 #'@export
-plot_set_percentages <- function(data, varnames, weight_variable = NULL, nintersects = 12, exclude_unique = T, label = NULL){
+plot_set_percentages <- function(data, varnames, weight_variable = NULL, weighting_function = NULL, nintersects = 12, exclude_unique = T, label = NULL){
   intersections_df <- expand_to_set_intersections(data, varnames)
   expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = T)
   case_load_percent <- svymean_intersected_sets(expanded_df$data, expanded_df$newvarnames, weight_variable)

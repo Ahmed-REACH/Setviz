@@ -4,7 +4,8 @@
 \alias{svymean_intersected_sets}
 \title{Create a vector containing the weighted percentages in each set}
 \usage{
-svymean_intersected_sets(data, intersected_names, weight_variable = NULL)
+svymean_intersected_sets(data, intersected_names, weight_variable = NULL,
+  weighting_function = NULL)
 }
 \arguments{
 \item{data}{a dataframe containing all the intersected sets}

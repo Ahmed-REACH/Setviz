@@ -31,7 +31,7 @@ expand_to_set_intersections <- function(data, varnames, mutually_exclusive_sets 
   data <- lapply(data[,varnames],as.logical)
   attach(data)
   # creates setintersections, a dataframe of newvarnames with T/F in each column
-  setintersections <- lapply(newvarnames,function(x){
+  setintersections <- lapply(newvars_expression,function(x){
     eval(parse(text = x))
   })
   detach(data)

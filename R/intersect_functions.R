@@ -2,12 +2,13 @@
 #'
 #' @param data a dataframe containing all the 1,0 indicators in varnames
 #' @param varnames a vector containing the names of variables to be used in the intersection
+#' @param mutually_exclusive_sets if FALSE, intersecting sets will be cummulative, i.e. "A & B & C" will be also counted in "A & B"; if FALSE, records that have "A & B" will not be counted in "A".
 #' @return The dataframe containing the intersections of all variables and the names of those combinations of varnames with '&'
 #'
 #' @importFrom magrittr %>%
 #'
 #' @export
-expand_to_set_intersections <- function(data, varnames) {
+expand_to_set_intersections <- function(data, varnames, mutually_exclusive_sets = FALSE) {
   ### sanitise inputs
   if(!is.data.frame(data))stop("input must be a data frame") #ensure first input is a dataframe
   if(any(grep("&", varnames)))stop("can't have the '&' sign in your variable names, it will mess everything up!")
@@ -18,9 +19,14 @@ expand_to_set_intersections <- function(data, varnames) {
      sum(sapply(data[varnames], is.logical)) == length(varnames)))stop("all the variables must be numeric or logical") #ensure all columns are coercible to numbers
 
   ### creates a vector for the names of new variables using all combinations of varnames linked with '&'
-  newvarnames<-lapply(1:length(varnames),function(x){
-    combn(varnames,x) %>% apply(2,paste,collapse="&")
-  }) %>% unlist
+  newvarnames <-  combine_varnames_to_evaluable_expressions_cummulative(varnames)
+  if(!mutually_exclusive_sets){
+  newvars_expression <- newvarnames
+  }else{
+    newvars_expression<-combine_varnames_to_evaluable_expressions_mutually_exclusive(varnames)
+  }
+
+
   # coverts the columns in the data corresponding to varnames to T/F columns
   data <- lapply(data[,varnames],as.logical)
   attach(data)
@@ -35,6 +41,8 @@ expand_to_set_intersections <- function(data, varnames) {
   # names(setintersections)<-gsub("&","._.a.n.d._.",newvarnames)
   return(setintersections)
 }
+
+
 
 #' Create a plot from the percentages in each set
 #'
@@ -68,17 +76,21 @@ set_intersection_plot<-function(set_percentages, nintersects = 12, nsets = NULL,
 #'
 #' @export
 
-add_set_intersection_to_df <- function(data, varnames, exclude_unique = T){
+add_set_intersection_to_df <- function(data, varnames, exclude_unique = T, mutually_exclusive_sets = FALSE){
 ### Sanitise inputs
   if(!is.data.frame(data))stop("input must be a data frame") #ensure first input is a dataframe
   ###this function will change to reflect calculating the design from the sampling frame with map_to_design
-  if(any(grep("&", varnames)))stop("can't have the '&' sign in your variable names, it will mess everything up!")
+  if(any(grep("&", varnames))) stop("can't have the '&' sign in your variable names, it will mess everything up!")
+  if(any(grep("!", varnames))) stop("can't have the '!' sign in your variable names, it will mess everything up!")
+
   culprits <- varnames[!(varnames %in% names(data))]
   #ensure all the variable names are in the dataframe
   if(sum(varnames %in% names(data)) < length(varnames))stop(paste0("all the variable names must be found in the data: ", culprits, " is/are not"))
 
 #### Use the expand_composite_indicators function to return the intersected sets,
-  intersected_sets<- expand_to_set_intersections(data,varnames)
+  intersected_sets<- expand_to_set_intersections(data,
+                                                 varnames,
+                                                 mutually_exclusive_sets = mutually_exclusive_sets)
   newvarnames <- names(intersected_sets) #and save the names in a new vector
 
 #### Take away the single indicators
@@ -150,9 +162,10 @@ svymean_intersected_sets <- function(data, intersected_names, weight_variable = 
 #' @param label the label to be added to the plot
 #' @return An UpSetR plot object with the different sets
 #' @export
-plot_set_percentages <- function(data, varnames, weight_variable = NULL, weighting_function = NULL, nintersects = 12, exclude_unique = T, label = NULL){
+plot_set_percentages <- function(data, varnames, weight_variable = NULL, weighting_function = NULL, nintersects = 12, exclude_unique = T, mutually_exclusive_sets = FALSE ,label = NULL){
   intersections_df <- expand_to_set_intersections(data, varnames)
-  expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = T)
+  expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = T,
+                                            mutually_exclusive_sets = mutually_exclusive_sets)
   case_load_percent <- svymean_intersected_sets(expanded_df$data, expanded_df$newvarnames, weight_variable)
   nsets <- length(varnames)
   set_intersection_plot(case_load_percent, nintersects = nintersects, nsets = nsets, label)

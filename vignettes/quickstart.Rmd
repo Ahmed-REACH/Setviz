@@ -1,0 +1,62 @@
+---
+title: "quickstart"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{quickstart}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(Setviz)
+```
+
+Start with a dataset with logical or binary 0/1 columns:
+
+```{r}
+
+data[,c("WASH","Protection","Education","Shelter","Livelihoods")] %>% head
+
+
+```
+
+You can create the intersection plot directly:
+
+```{r}
+
+plot_set_percentages(data = data,
+                     varnames = c("WASH","Protection","Education","Shelter","Livelihoods"),
+                     nintersects = 12)
+
+```
+
+By default, the sets are calcualted _cumulatively_. This means that in this example in this example, the set "Wash & Shelter" also includes all records that are in "Wash & Shelter & Livelihoods".
+
+To prevent this behaviour and have exact, mutually exclusive sets (meaning that "Wash & Shelter" contains exclusively the records that are TRUE for Wash and shelter _and FALSE for all other variables_), you can set the `mutually_exlusive_sets` parameter to `TRUE`:
+
+```{r}
+plot_set_percentages(data = data,
+                             varnames = c("WASH","Protection","Education","Shelter","Livelihoods"),nintersects = 12,
+                             mutually_exclusive_sets = TRUE)
+
+```
+
+
+
+**IMPORTANT NOTES**
+
+- For complex samples that require weighted percentages, you need to provide the `weight_variable` or the `weight_function` paramter. (please see `?plot_set_percentages` for details.)
+- The "Set Size" on the bottom left may _not be correct_ and should not be included in any published outputs.
+
+
+
+
+
+

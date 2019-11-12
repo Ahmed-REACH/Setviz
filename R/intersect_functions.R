@@ -50,13 +50,17 @@ expand_to_set_intersections <- function(data, varnames, mutually_exclusive_sets 
 #' @param nintersects number of intersections to look at, the default being 12
 #' @param nsets number of unique sets making up the intersection
 #' @param label the label to be added to the plot
+#' @param round_to_1_percent if FALSE, will ignore sets with < 1%. If TRUE, will round up intersections >0 to at least 1% and include them.
 #' @return A plot object
 #'
 #' @importFrom UpSetR upset fromExpression
 #'
 #' @export
-set_intersection_plot<-function(set_percentages, nintersects = 12, nsets = NULL, label = NULL){
-  set_percentages <- set_percentages*100 %>% round
+set_intersection_plot<-function(set_percentages, nintersects = 12, nsets = NULL, label = NULL, round_to_1_percent = TRUE){
+  set_percentages <- set_percentages*100
+  # round up to 1% (unless 0); otherwise UpSetR will ignore those categories (because upsetr thinks these are counts..)
+  if(round_to_1_percent){set_percentages[set_percentages<1 & set_percentages!=0] <- 1}
+    set_percentages <- set_percentages %>% round
   label <- as.character(label)
   upset_object <- upset(fromExpression(set_percentages),
         order.by = "freq",
@@ -160,15 +164,17 @@ svymean_intersected_sets <- function(data, intersected_names, weight_variable = 
 #' @param nintersects number of intersections to look at, the default being 12
 #' @param exclude_unique whether the set intersections should include singular sets (i.e. that one variable). Note that if this is set to True, the total set size on the left will be wrong
 #' @param label the label to be added to the plot
+#' @param round_to_1_percent if FALSE, will ignore sets with < 1%. If TRUE (default), will round up intersections >0 to at least 1% and include them.
 #' @return An UpSetR plot object with the different sets
 #' @export
-plot_set_percentages <- function(data, varnames, weight_variable = NULL, weighting_function = NULL, nintersects = 12, exclude_unique = T, mutually_exclusive_sets = FALSE ,label = NULL){
+plot_set_percentages <- function(data, varnames, weight_variable = NULL, weighting_function = NULL, nintersects = 12, exclude_unique = T, mutually_exclusive_sets = FALSE ,label = NULL,round_to_1_percent = TRUE){
   intersections_df <- expand_to_set_intersections(data, varnames)
   expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = T,
                                             mutually_exclusive_sets = mutually_exclusive_sets)
   case_load_percent <- svymean_intersected_sets(expanded_df$data, expanded_df$newvarnames, weight_variable)
-  nsets <- length(varnames)
-  set_intersection_plot(case_load_percent, nintersects = nintersects, nsets = nsets, label)
+  # nsets <- length(varnames)
+  nsets<-length(case_load_percent)
+  set_intersection_plot(case_load_percent, nintersects = nintersects, nsets = nsets, label,round_to_1_percent = round_to_1_percent)
   # on.exit()
 }
 

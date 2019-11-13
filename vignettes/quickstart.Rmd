@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
 library(Setviz)
 ```
 
+
+## Example data
 Start with a dataset with logical or binary 0/1 columns:
 
 ```{r}
@@ -26,6 +28,8 @@ data[,c("WASH","Protection","Education","Shelter","Livelihoods")] %>% head
 
 
 ```
+
+## Basic Plot
 
 You can create the intersection plot directly:
 
@@ -36,6 +40,8 @@ plot_set_percentages(data = data,
                      nintersects = 12)
 
 ```
+
+## Cummulative vs. Exclusive sets
 
 By default, the sets are calcualted _cumulatively_. This means that in this example in this example, the set "Wash & Shelter" also includes all records that are in "Wash & Shelter & Livelihoods".
 
@@ -49,12 +55,32 @@ plot_set_percentages(data = data,
 ```
 
 
+## Include single category sets
 
+To include sets of a single category (no intersection but only one of the binary data variables are 1/TRUE), set `exclude_unique` to `FALSE`.
+
+```{r}
+
+plot_set_percentages(data = data,
+                             varnames = c("WASH","Protection","Education","Shelter","Livelihoods"),nintersects = 12,
+                             exclude_unique = FALSE)
+
+```
+
+
+As you see above, if you are using cumulative sets, the single-category sets will always be larger than combinations that contain them. This option makes most sense with mututually exclusive sets:
+
+```{r}
+lot_set_percentages(data = data,
+                             varnames = c("WASH","Protection","Education","Shelter","Livelihoods"),nintersects = 12,
+                             mutually_exclusive_sets = TRUE,
+                             exclude_unique = FALSE)
+```
 **IMPORTANT NOTES**
 
 - For complex samples that require weighted percentages, you need to provide the `weight_variable` or the `weight_function` paramter. (please see `?plot_set_percentages` for details.)
 - The "Set Size" on the bottom left may _not be correct_ and should not be included in any published outputs.
-
+- Currently decimal percentages are not supported. Therefore sets with <=0.5% share will be ignored. You can instead treat them as 1% by setting `round_to_1_percent` to `TRUE`
 
 
 

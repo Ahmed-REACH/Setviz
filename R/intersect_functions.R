@@ -102,6 +102,11 @@ add_set_intersection_to_df <- function(data, varnames, exclude_unique = T, mutua
     intersected_sets <- intersected_sets[,-(1:length(varnames))]
     newvarnames <- newvarnames[-(1:length(varnames))]}
 
+#### delete any duplicate variable names
+  ## this is important especially if unique sets are included, where we know that they will be the same names
+
+  data <- data[,!(names(data) %in% newvarnames)]
+
 #### Append the new composite indicators to the dataset, fixing the names
   final_names <- c(names(data), newvarnames)
   data <- cbind(data, intersected_sets, stringsAsFactors = F)
@@ -168,8 +173,8 @@ svymean_intersected_sets <- function(data, intersected_names, weight_variable = 
 #' @return An UpSetR plot object with the different sets
 #' @export
 plot_set_percentages <- function(data, varnames, weight_variable = NULL, weighting_function = NULL, nintersects = 12, exclude_unique = T, mutually_exclusive_sets = FALSE ,label = NULL,round_to_1_percent = TRUE){
-  intersections_df <- expand_to_set_intersections(data, varnames)
-  expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = exclude_unique,
+  expanded_df <- add_set_intersection_to_df(data, varnames,
+                                            exclude_unique = exclude_unique,
                                             mutually_exclusive_sets = mutually_exclusive_sets)
   case_load_percent <- svymean_intersected_sets(expanded_df$data, expanded_df$newvarnames, weight_variable)
   # nsets <- length(varnames)

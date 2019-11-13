@@ -169,7 +169,7 @@ svymean_intersected_sets <- function(data, intersected_names, weight_variable = 
 #' @export
 plot_set_percentages <- function(data, varnames, weight_variable = NULL, weighting_function = NULL, nintersects = 12, exclude_unique = T, mutually_exclusive_sets = FALSE ,label = NULL,round_to_1_percent = TRUE){
   intersections_df <- expand_to_set_intersections(data, varnames)
-  expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = T,
+  expanded_df <- add_set_intersection_to_df(data, varnames, exclude_unique = exclude_unique,
                                             mutually_exclusive_sets = mutually_exclusive_sets)
   case_load_percent <- svymean_intersected_sets(expanded_df$data, expanded_df$newvarnames, weight_variable)
   # nsets <- length(varnames)

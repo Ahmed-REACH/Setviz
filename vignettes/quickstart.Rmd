@@ -68,15 +68,16 @@ plot_set_percentages(data = data,
 ```
 
 
-As you see above, if you are using cumulative sets, the single-category sets will always be larger than combinations that contain them. This option makes most sense with mututually exclusive sets:
+As you see above, if you are using cumulative sets, the single-category sets will always be larger than combinations that contain them. This option makes most sense with mutually exclusive sets:
 
 ```{r}
-lot_set_percentages(data = data,
+plot_set_percentages(data = data,
                              varnames = c("WASH","Protection","Education","Shelter","Livelihoods"),nintersects = 12,
                              mutually_exclusive_sets = TRUE,
                              exclude_unique = FALSE)
 ```
-**IMPORTANT NOTES**
+
+## IMPORTANT NOTES
 
 - For complex samples that require weighted percentages, you need to provide the `weight_variable` or the `weight_function` paramter. (please see `?plot_set_percentages` for details.)
 - The "Set Size" on the bottom left may _not be correct_ and should not be included in any published outputs.

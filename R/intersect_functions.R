@@ -105,7 +105,7 @@ add_set_intersection_to_df <- function(data, varnames, exclude_unique = T, mutua
 #### delete any duplicate variable names
   ## this is important especially if unique sets are included, where we know that they will be the same names
 
-  data <- data[,!(names(data) %in% newvarnames)]
+  data <- data[,!(names(data) %in% newvarnames), drop = F]
 
 #### Append the new composite indicators to the dataset, fixing the names
   final_names <- c(names(data), newvarnames)

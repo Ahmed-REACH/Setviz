@@ -5,7 +5,8 @@
 \title{Create a plot from a dataset and variable names combining the make_set_percentages and set_percentage_plot functions}
 \usage{
 plot_set_percentages(data, varnames, weight_variable = NULL,
-  nintersects = 12, exclude_unique = T, label = NULL)
+  weighting_function = NULL, nintersects = 12, exclude_unique = T,
+  label = NULL)
 }
 \arguments{
 \item{data}{a dataframe containing all the 1,0 indicators in varnames}
@@ -25,7 +26,4 @@ An UpSetR plot object with the different sets
 }
 \description{
 Create a plot from a dataset and variable names combining the make_set_percentages and set_percentage_plot functions
-}
-\examples{
-see vignette
 }

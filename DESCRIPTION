@@ -1,7 +1,7 @@
 Package: Setviz
 Type: Package
 Title: Visualise intersecting sets with weights
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Eliora", "Henzler", role = "cre", "mai", email = "eliora.henzler@impact.initiatives.org"),
     person("Martin", "Barner", role = "aut"))

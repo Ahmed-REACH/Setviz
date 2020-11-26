@@ -144,11 +144,12 @@ svymean_intersected_sets <- function(data, intersected_names, weight_variable = 
     # if the weights are not calculated by weights_of....
     if(!weight_variable %in% names(data))stop("weighting variable missing or not in dataframe")
     design <- svydesign(~1, weights = data[[weight_variable]], data = data) #later will become map_to_design
-  } else if (!is.null(weighting_function)) {
-    design <- svydesign(~1, weights = weighting_function(data), data = data)
-  } else {
-    design <- svydesign(~1, weights = NULL, data = data)
-  }
+	} else if (!is.null(weighting_function)) {
+		data$weights =weighting_function(data)
+		design <- svydesign(~1, weights = ~weights , data = data)
+	} else {
+		design <- svydesign(~1, weights = NULL, data = data)
+	}
 
 #### Calculate the average % using svymean and save in a named vector
   aggregated.results <- svymean(data[,intersected_names], design, na.rm = T)

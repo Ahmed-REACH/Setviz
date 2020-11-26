@@ -15,7 +15,9 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
+library(dplyr)
 library(Setviz)
+
 ```
 
 
@@ -25,6 +27,11 @@ Start with a dataset with logical or binary 0/1 columns:
 ```{r}
 
 data[,c("WASH","Protection","Education","Shelter","Livelihoods")] %>% head
+data$WASH<-sample(c(1,1,0),nrow(data),replace=T)
+data$Protection<-ifelse(data$WASH==1,
+                        sample(c(1,1,0),1,replace=T),
+                        sample(c(1,0,0),1,replace=T))
+
 
 
 ```
@@ -74,7 +81,7 @@ As you see above, if you are using cumulative sets, the single-category sets wil
 plot_set_percentages(data = data,
                              varnames = c("WASH","Protection","Education","Shelter","Livelihoods"),nintersects = 12,
                              mutually_exclusive_sets = TRUE,
-                             exclude_unique = FALSE)
+                             exclude_unique = FALSE, round_to_1_percent = FALSE)
 ```
 
 ## IMPORTANT NOTES

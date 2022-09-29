@@ -56,11 +56,12 @@ expand_to_set_intersections <- function(data, varnames, mutually_exclusive_sets 
 #' @importFrom UpSetR upset fromExpression
 #'
 #' @export
-set_intersection_plot<-function(set_percentages, nintersects = 12, nsets = NULL, label = NULL, round_to_1_percent = TRUE){
+set_intersection_plot<-function(set_percentages, nintersects = 12, nsets = NULL, label = NULL, round_to_1_percent = TRUE, digits = NULL){
   set_percentages <- set_percentages*100
   # round up to 1% (unless 0); otherwise UpSetR will ignore those categories (because upsetr thinks these are counts..)
   if(round_to_1_percent){set_percentages[set_percentages<1 & set_percentages!=0] <- 1}
-    set_percentages <- set_percentages %>% round
+    digits <- ifelse(!is.null(digits), as.numeric(digits), 0)
+    set_percentages <- set_percentages %>% round(., digits = digits)
   label <- as.character(label)
   upset_object <- upset(fromExpression(set_percentages),
         order.by = "freq",

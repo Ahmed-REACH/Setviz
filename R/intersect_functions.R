@@ -181,7 +181,7 @@ plot_set_percentages <- function(data, varnames, weight_variable = NULL, weighti
   case_load_percent <- svymean_intersected_sets(expanded_df$data, expanded_df$newvarnames, weight_variable, weighting_function)
   # nsets <- length(varnames)
   nsets<-length(case_load_percent)
-  set_intersection_plot(case_load_percent, nintersects = nintersects, nsets = nsets, label,round_to_1_percent = round_to_1_percent)
+  set_intersection_plot(case_load_percent, nintersects = nintersects, nsets = nsets, label,round_to_1_percent = round_to_1_percent, digits = digits)
   # on.exit()
 }
 

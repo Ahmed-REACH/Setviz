@@ -174,7 +174,7 @@ svymean_intersected_sets <- function(data, intersected_names, weight_variable = 
 #' @param round_to_1_percent if FALSE, will ignore sets with < 1%. If TRUE (default), will round up intersections >0 to at least 1% and include them.
 #' @return An UpSetR plot object with the different sets
 #' @export
-plot_set_percentages <- function(data, varnames, weight_variable = NULL, weighting_function = NULL, nintersects = 12, exclude_unique = T, mutually_exclusive_sets = FALSE ,label = NULL,round_to_1_percent = TRUE){
+plot_set_percentages <- function(data, varnames, weight_variable = NULL, weighting_function = NULL, nintersects = 12, exclude_unique = T, mutually_exclusive_sets = FALSE ,label = NULL,round_to_1_percent = TRUE, digits = NULL){
   expanded_df <- add_set_intersection_to_df(data, varnames,
                                             exclude_unique = exclude_unique,
                                             mutually_exclusive_sets = mutually_exclusive_sets)
